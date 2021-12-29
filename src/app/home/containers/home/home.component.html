@@ -1,14 +1,16 @@
 <div class="background p-grid p-ai-center p-jc-center vertical-container" style="height: 100%">
-  <p-card header="Vind een speelterein in de buurt!" class="p-p-2">
-    <div class="p-fluid">
-      <div class="p-field">
-        <span class="p-input-icon-right">
-          <i *ngIf="!loading" class="pi pi-map-marker" id="location" style="cursor: pointer;" (click)="getUserCurrentPosition()"></i>
+  <div class="p-lg-5 p-sm-8 p-col-10 p-text-center">
+    <img [routerLink]="['/home']" src="assets/logo/zandbak_logo.png" style="cursor: pointer"  width="100%">
+    <h1 class="hero-text">Vind een speelterein in de buurt!</h1>
+    <div class="p-fluid text-field-wrapper">
+        <span class="p-input-icon-left">
+          <i *ngIf="!loading" class="pi pi-map-marker" id="location" style="cursor: pointer;"
+             (click)="getUserCurrentPosition()"></i>
           <i *ngIf="loading" class="pi pi-spin pi-spinner"></i>
-          <input #mapSearchField type="text" [placeholder]="textFieldPlaceHolder" pInputText (click)="onSearchFieldClick()" />
+          <input #mapSearchField type="text" [placeholder]="textFieldPlaceHolder" pInputText
+                 (click)="onSearchFieldClick()" />
         </span>
-      </div>
-      <p-button label="Zoeken" (onClick)="onSearchButtonClick()"></p-button>
     </div>
-  </p-card>
+
+  </div>
 </div>

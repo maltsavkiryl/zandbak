@@ -36,6 +36,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  onSearchFieldClick(): void {
+    this.subscriptions$.next();
+    this.loading = false;
+    this.textFieldPlaceHolder = "Geef een locatie in...";
+  }
+
   ngAfterViewInit(): void {
     const searchBox = new google.maps.places.SearchBox(this.searchField.nativeElement);
 
@@ -48,11 +54,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           lat: place.geometry?.location?.lat() || 0,
           lng: place.geometry?.location?.lng() || 0
         };
+        this.navigateToSearch();
       }
     });
   }
 
-  onSearchButtonClick(): void {
+  private navigateToSearch(): void {
     if (this.address) {
       this.router.navigate(["/search"], {
         queryParams: {
@@ -65,11 +72,5 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions$.next();
     this.subscriptions$.unsubscribe();
-  }
-
-  onSearchFieldClick() {
-    this.subscriptions$.next();
-    this.loading = false;
-    this.textFieldPlaceHolder = "Geef een locatie in...";
   }
 }
