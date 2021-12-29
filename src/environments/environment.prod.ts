@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  baseHostUrl: "https://data.stad.gent/api/v2/catalog/datasets/speelterreinen-gent"
 };

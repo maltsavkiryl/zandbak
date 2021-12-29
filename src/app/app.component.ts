@@ -1,10 +1,20 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { MenuItem } from "primeng/api";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"]
 })
 export class AppComponent {
-  title = 'zandbak';
+  title = "Zandbak";
+
+  items: MenuItem[] = [
+    { label: "Home", routerLink: "/home" },
+    { label: "Zoeken", routerLink: "/search" },
+  ];
+
+  constructor(public route: ActivatedRoute) {
+  }
 }

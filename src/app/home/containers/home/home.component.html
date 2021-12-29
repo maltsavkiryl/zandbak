@@ -1,0 +1,15 @@
+<div class="background p-grid p-ai-center p-jc-center vertical-container">
+  <p-card header="Vind een speelplaats in uw buurt!" styleClass="p-card-shadow">
+
+    <div class="p-fluid">
+      <div class="p-field">
+        <label for="location">Waar wil je spelen?</label>
+        <span class="p-input-icon-right">
+          <i class="pi pi-map-marker" id="location" style="cursor: pointer;" (click)="getUserCurrentPosition()"></i>
+          <input #mapSearchField type="text" placeholder="Speelstraat 123..." pInputText />
+        </span>
+      </div>
+      <p-button label="Zoeken" (onClick)="onSearchButtonClick()"></p-button>
+    </div>
+  </p-card>
+</div>

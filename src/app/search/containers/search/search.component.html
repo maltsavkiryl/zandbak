@@ -1,0 +1,58 @@
+<div style="height: 100%; width: 100%">
+  <div class="p-grid" style="max-height: 100%;">
+    <div class="search-bar p-col-12 p-p-3">
+      <div class="p-formgroup-inline p-ml-4 p-ai-center">
+        <div class="p-field p-mb-0">
+        <span class="p-input-icon-right">
+          <i class="pi pi-map-marker" id="location" style="cursor: pointer; color: blue; font-size: 1.1em" (click)="getUserCurrentPosition()"></i>
+          <input #mapSearchField [style]="{'width': '400px'}" type="text" (change)="onAddressChanged($event)" placeholder="Speelstraat 123..." pInputText />
+        </span>
+        </div>
+        <div class="p-field p-mb-0">
+          <p-multiSelect id="functions" [style]="{'width': '300px'}" placeholder="Kies functies..."
+                         [options]="allFunctions" (onChange)="onFunctionsSelectionChanged()" [(ngModel)]="selectedFunctions"></p-multiSelect>
+        </div>
+        <div class="p-field p-mb-0">
+          <p-slider [disabled]="address == null" id="range" [(ngModel)]="rangeInKm" (onChange)="onRangeSelectChange()"
+                    [style]="{'width': '300px'}" [min]="1" [max]="20"></p-slider>
+        </div>
+        <div class="p-field p-mb-0">
+          <h4>{{rangeInKm}} Km</h4>
+        </div>
+        <div class="p-field p-mb-0">
+          <i *ngIf="loading" class="pi pi-spin pi-spinner"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-col-12">
+      <div class="p-grid">
+        <div class="p-col-4" style="overflow-y: scroll; height: 85vh">
+          <div *ngIf="playGroundList$ | async as playGrounds">
+            <p class="p-p-3 number-of-results">{{playGrounds.length}} Resultaten gevonden</p>
+            <div *ngFor="let playGround of playGrounds" class="p-p-3">
+              <div class="playground-card">
+                <img class="image" src="https://www.miracle-recreation.com/content/uploads/2018/11/Image-Header_Park.jpg.webp"/>
+                <p class="title">{{playGround.fields.naam}}</p>
+                <p class="size">{{playGround.size}} m2</p>
+                <p class="functions">{{playGround.fields.functies}}</p>
+              </div>
+            </div>
+            <div *ngIf="playGrounds.length < 1" class="p-p-3">
+              <p>Geen resultaten gevonden.</p>
+            </div>
+          </div>
+        </div>
+        <div class="p-col-8" style="padding: 0">
+          <google-map #map width="100%" height="100%">
+            <map-marker
+              *ngFor="let marker of markers"
+              [position]="marker.position"
+            >
+            </map-marker>
+          </google-map>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
