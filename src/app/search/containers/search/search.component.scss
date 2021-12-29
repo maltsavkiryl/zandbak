@@ -2,28 +2,43 @@
   border: 2px solid #f5f5f5;
 }
 
-.number-of-results{
+.number-of-results {
   font-size: 1.2em;
   font-weight: bold;
+  margin: 30px;
 }
 
 .playground-card {
   border-top: 2px solid #e5e5e5;
-  border-bottom: 2px solid #e5e5e5;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
+  vertical-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f8f8f8;
+  }
 
   .image {
-    height: 120px;
-    width: 120px;
-    float: left;
+    height: 100px;
+    width: 100px;
     border-radius: 10px;
     margin-right: 20px;
+    float: left;
+  }
+
+  .playground-card-body {
+    display: inline-block;
+    position: relative;
+    width: 100%;
   }
 
   .title {
     font-weight: bold;
     font-size: 1.2em;
+    margin: 0 0 10px 0;
   }
 
   .size {
@@ -33,10 +48,12 @@
     color: white;
     font-size: 0.9em;
     font-weight: bold;
-    display: inline;
+    margin: 0 0 10px 0;
+    display: inline-block;
   }
 
   .functions {
+    margin: 0;
     font-size: 1.1em;
   }
 }

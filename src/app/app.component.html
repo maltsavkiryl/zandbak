@@ -1,6 +1,6 @@
 <p-menubar [model]="items" [style]="{'height' :'80px'}">
   <ng-template pTemplate="start">
-    <img src="assets/logo/zandbak_logo.png" height="30" class="p-mr-2">
+    <img [routerLink]="['/home']" src="assets/logo/zandbak_logo.png" style="cursor: pointer" height="30" class="p-mr-2">
   </ng-template>
 </p-menubar>
 

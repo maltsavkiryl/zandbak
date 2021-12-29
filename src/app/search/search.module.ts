@@ -9,10 +9,11 @@ import { ButtonModule } from "primeng/button";
 import { CardModule } from "primeng/card";
 import { InputTextModule } from "primeng/inputtext";
 import { SliderModule } from "primeng/slider";
+import { VirtualScrollerModule } from "primeng/virtualscroller";
 
 @NgModule({
   declarations: [SearchComponent],
-  imports: [SearchRoutingModule, CommonModule, GoogleMapsModule, MultiSelectModule, FormsModule, ButtonModule, CardModule, InputTextModule, SliderModule]
+  imports: [SearchRoutingModule, CommonModule, GoogleMapsModule, MultiSelectModule, FormsModule, ButtonModule, CardModule, InputTextModule, SliderModule, VirtualScrollerModule]
 })
 export class SearchModule {
 }

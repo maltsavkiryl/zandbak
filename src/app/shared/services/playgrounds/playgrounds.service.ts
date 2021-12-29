@@ -30,21 +30,20 @@ export class PlaygroundsService {
     return self.indexOf(value) === index;
   }
 
-  getPlayGrounds(functions: string[], address: Address, rangeInKm: number): Observable<PlayGround[]> {
-    // let query = `?where=distance(geo_point_2d, geom'POINT(${address.lng} ${address.lat})', ${rangeInKm}km) and functies like "${selectedFunctions.concat(', ')}"`;
-    // let query = `?where=functies like "${selectedFunctions.concat(', ')}"`;
+  getPlayGrounds(functions: string[], address: Address, rangeInKm: number, limit: number): Observable<{ total: number; result: PlayGround[] }> {
     let query = new PlayGroundsQueryBuilder()
       .addFunctions(functions)
       .addLocation(address,rangeInKm)
-      .addLimit(20)
+      .addLimit(limit)
       .build();
 
     return this.http.get<any>(`${this.baseHostUrl}/records${query}`).pipe(
-      map((results) => results["records"].map((value: any) => value["record"])));
-  }
-
-  private queryBuilder(): string {
-    return "";
+      map((response) => {
+        return {
+          total: response["total_count"],
+          result: response["records"].map((value: any) => value["record"]),
+        }
+      }));
   }
 }
 
@@ -63,11 +62,7 @@ export class PlayGroundsQueryBuilder {
 
   addLimit(limit: number): PlayGroundsQueryBuilder {
     if (limit !== null) {
-      if (this.functions.length == 0) {
         this.query += `&limit=${limit}`;
-      } else {
-        this.query += `&limit=100`;
-      }
     }
     return this;
   }

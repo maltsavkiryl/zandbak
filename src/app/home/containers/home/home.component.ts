@@ -1,29 +1,36 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { LocationService } from "../../../shared/services/location/location.service";
 import { Router } from "@angular/router";
 import { Address } from "../../../shared/models/address.interface";
+import { Subject, takeUntil } from "rxjs";
 
 @Component({
-  selector: "app-home",
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.scss"]
 })
-export class HomeComponent implements OnInit, AfterViewInit {
-
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("mapSearchField") searchField: ElementRef;
   private address: Address;
+  loading: boolean;
+
+  private subscriptions$ = new Subject<void>();
 
   constructor(private locationService: LocationService, private router: Router) {
   }
 
   ngOnInit(): void {
-    // this.getUserCurrentPosition();
+    this.getUserCurrentPosition();
   }
 
   getUserCurrentPosition(): void {
-    this.locationService.getAddress().subscribe((address) => {
-      this.searchField.nativeElement.value = address.name;
-    });
+    this.loading = true;
+    this.locationService.getAddress()
+      .pipe(takeUntil(this.subscriptions$))
+      .subscribe((address) => {
+        this.searchField.nativeElement.value = address.name;
+        this.address = address;
+        this.loading = false;
+      });
   }
 
   ngAfterViewInit(): void {
@@ -50,5 +57,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions$.next();
+    this.subscriptions$.unsubscribe();
   }
 }
