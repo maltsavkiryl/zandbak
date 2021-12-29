@@ -12,7 +12,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { environment } from "../environments/environment";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MenubarModule } from "primeng/menubar";
-import { SharedModule } from "primeng/api";
+import { SharedModule } from "./shared/shared.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,7 +26,6 @@ import { SharedModule } from "primeng/api";
     BrowserAnimationsModule,
     HttpClientModule,
     GoogleMapsModule,
-    MenubarModule,
     SharedModule
   ],
   providers: [

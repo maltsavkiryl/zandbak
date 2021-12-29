@@ -1,16 +1,11 @@
 <div class="p-grid p-ai-stretch vertical-container wrapper">
-  <div class="p-col-12 navbar p-p-0" style="height: 80px">
-    <p-menubar [model]="items" [style]="{'height' :'80px'}">
-      <ng-template pTemplate="start">
-        <img [routerLink]="['/home']" src="assets/logo/zandbak_logo.png" style="cursor: pointer" height="35"
-             class="p-mr-2 p-ml-3">
-      </ng-template>
-    </p-menubar>
+  <div class="p-col-12 p-p-0">
+    <zandbak-nav-bar [items]="items"></zandbak-nav-bar>
   </div>
   <div class="p-col-12 p-p-0" style="height: calc(100vh - 140px)">
     <router-outlet></router-outlet>
   </div>
-  <div class="p-col-12 footer" style="height: 60px; font-weight: bold; color: #f69c15">
-    <div>Kiryl Maltsav x Wisemen</div>
+  <div class="p-col-12 p-p-0">
+    <zandbak-footer></zandbak-footer>
   </div>
 </div>
