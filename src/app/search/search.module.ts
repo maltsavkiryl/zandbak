@@ -10,9 +10,12 @@ import { CardModule } from "primeng/card";
 import { InputTextModule } from "primeng/inputtext";
 import { SliderModule } from "primeng/slider";
 import { VirtualScrollerModule } from "primeng/virtualscroller";
+import { FilterBarComponent } from './components/filter-bar/filter-bar.component';
+import { PlaygroundListComponent } from './components/playground-list/playground-list.component';
+import { PlaygroundMapComponent } from './components/playground-map/playground-map.component';
 
 @NgModule({
-  declarations: [SearchComponent],
+  declarations: [SearchComponent, FilterBarComponent, PlaygroundListComponent, PlaygroundMapComponent],
   imports: [SearchRoutingModule, CommonModule, GoogleMapsModule, MultiSelectModule, FormsModule, ButtonModule, CardModule, InputTextModule, SliderModule, VirtualScrollerModule]
 })
 export class SearchModule {

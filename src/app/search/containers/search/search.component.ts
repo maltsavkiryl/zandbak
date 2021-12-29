@@ -1,12 +1,13 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { PlaygroundsService } from "../../../shared/services/playgrounds/playgrounds.service";
-import { map, Observable, Subject, takeUntil, tap } from "rxjs";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
+import { PlaygroundsService } from "../../services/playgrounds/playgrounds.service";
+import { map, Subject, takeUntil, tap } from "rxjs";
 import { PlayGround } from "../../../shared/models/playground.interface";
-import { GoogleMap } from "@angular/google-maps";
 import { LocationService } from "../../../shared/services/location/location.service";
 import { Address } from "../../../shared/models/address.interface";
 import { ActivatedRoute } from "@angular/router";
+import { Marker } from "../../models/marker.interface";
 
+const DEFAULT_RANGE: number = 3;
 const DEFAULT_ADDRESS: Address = {
   name: "",
   lat: 51.0597468,
@@ -14,27 +15,118 @@ const DEFAULT_ADDRESS: Address = {
 };
 
 @Component({
-  templateUrl: "./search.component.html",
-  styleUrls: ["./search.component.scss"]
+  templateUrl: "./search.component.html"
 })
 export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild(GoogleMap) map: GoogleMap;
-  @ViewChild("mapSearchField") searchField: ElementRef;
-
-  playGroundList$: Observable<PlayGround[]>;
-  selectedFunctions: string[] = [];
-  allFunctions: string[] = [];
-  rangeInKm: number = 3;
+  playGroundFunctions: string[] = [];
+  playGroundList: PlayGround[];
+  rangeInKm: number = DEFAULT_RANGE;
   address: Address = DEFAULT_ADDRESS;
-  markers: { position: { lat: number, lng: number } }[] = [];
+  markers: Marker[] = [];
   totalResults: number = 0;
   loading: boolean = true;
-  playGrounds: PlayGround[] = [];
   paginationLimit: number = 20;
+  fitToBounds: boolean = false;
 
+  private selectedPlayGroundFunctions: string[] = [];
   private subscriptions$ = new Subject<void>();
 
   constructor(private activatedRoute: ActivatedRoute, private playGroundService: PlaygroundsService, private locationService: LocationService) {
+  }
+
+  ngOnInit(): void {
+    this.getAllPlayGroundFunctions();
+    this.getPlayGrounds();
+  }
+
+  ngAfterViewInit(): void {
+    this.activatedRoute.queryParamMap
+      .pipe(takeUntil(this.subscriptions$))
+      .subscribe((queryParams) => {
+        if (queryParams.get("name") && queryParams.get("lat") && queryParams.get("lng")) {
+          this.fitToBounds = false;
+          this.setAddress(queryParams.get("name"), queryParams.get("lat"), queryParams.get("lng"));
+          this.rangeInKm = 3;
+        }
+        this.getPlayGrounds();
+      });
+  }
+
+  onRangeSelectChange(rangeInKm: number): void {
+    this.rangeInKm = rangeInKm;
+    this.fitToBounds = true;
+    this.getPlayGrounds();
+  }
+
+  onFunctionsSelectionChanged(selectedPlayGroundFunctions: string[]): void {
+    this.selectedPlayGroundFunctions = selectedPlayGroundFunctions;
+    this.fitToBounds = true;
+    this.getPlayGrounds();
+  }
+
+  private getPlayGrounds(): void {
+    this.loading = true;
+    this.playGroundService.getPlayGrounds(this.selectedPlayGroundFunctions ?? [], this.address, this.rangeInKm, this.paginationLimit).pipe(
+      takeUntil(this.subscriptions$),
+      tap((response) => {
+        this.addMarkers(response.result);
+        this.totalResults = response.total;
+      }),
+      map((response) => response.result)
+    ).subscribe(playGrounds => {
+      this.loading = false;
+      this.playGroundList = playGrounds;
+    });
+  }
+
+  getUserCurrentPosition(): void {
+    this.loading = true;
+    this.locationService.getAddress()
+      .pipe(takeUntil(this.subscriptions$))
+      .subscribe((address) => {
+        this.fitToBounds = false;
+        this.address = address;
+        this.getPlayGrounds();
+      });
+  }
+
+  private getAllPlayGroundFunctions(): void {
+    this.playGroundService.getAllPlayGroundFunctions()
+      .pipe(takeUntil(this.subscriptions$))
+      .subscribe(playGroundFunctions => {
+        this.playGroundFunctions = playGroundFunctions;
+      });
+  }
+
+  private addMarkers(playGrounds: PlayGround[]): void {
+    this.markers = playGrounds.map((playGround) => ({
+      position: {
+        lat: playGround.fields.geo_point_2d.lat,
+        lng: playGround.fields.geo_point_2d.lon
+      }
+    }));
+  }
+
+  private setAddress(name: string | null, lat: string | null, lng: string | null): void {
+    this.address = {
+      name: name || DEFAULT_ADDRESS.name,
+      lat: lat ? parseFloat(lat) : DEFAULT_ADDRESS.lat,
+      lng: lng ? parseFloat(lng) : DEFAULT_ADDRESS.lng
+    };
+  }
+
+  loadPlayGrounds(limit: number): void {
+    if (limit > this.paginationLimit) {
+      this.paginationLimit = limit;
+      this.getPlayGrounds();
+    }
+  }
+
+  onAddressChanged(address: Address): void {
+    this.fitToBounds = false;
+    this.address = address;
+    this.rangeInKm = 3;
+    this.getPlayGrounds();
   }
 
   ngOnDestroy(): void {
@@ -42,134 +134,4 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions$.unsubscribe();
   }
 
-  ngOnInit(): void {
-    this.initFunctions();
-  }
-
-  ngAfterViewInit(): void {
-    this.initSearchBox();
-
-    this.activatedRoute.queryParamMap
-      .pipe(takeUntil(this.subscriptions$))
-      .subscribe((queryParams) => {
-        if (queryParams.get("name") && queryParams.get("lat") && queryParams.get("lng")) {
-          this.setAddress(queryParams.get("name"), queryParams.get("lat"), queryParams.get("lng"));
-          this.centerMapOnAddress();
-          this.getPlayGrounds(false);
-        } else {
-          this.getPlayGrounds();
-        }
-      });
-  }
-
-  onRangeSelectChange(): void {
-    this.getPlayGrounds();
-  }
-
-  onFunctionsSelectionChanged(): void {
-    this.getPlayGrounds();
-  }
-
-  private initSearchBox(): void {
-    const searchBox = new google.maps.places.SearchBox(this.searchField.nativeElement);
-    searchBox.addListener("places_changed", () => {
-      const places = searchBox.getPlaces();
-      if (places) {
-        const place = places[0];
-        this.setAddress(place.formatted_address, place.geometry?.location?.lat().toString(), place.geometry?.location?.lng().toString());
-      }
-      this.centerMapOnAddress();
-      this.getPlayGrounds(false);
-    });
-    this.searchField.nativeElement.value = this.address.name;
-  }
-
-  private centerMapOnAddress() {
-    this.map.googleMap?.setCenter({
-      lat: this.address.lat,
-      lng: this.address.lng
-    });
-    this.map.googleMap?.setZoom(16);
-    this.rangeInKm = 3;
-  }
-
-  private getPlayGrounds(fitMapToBounds: boolean = true): void {
-    this.loading = true;
-    this.playGroundService.getPlayGrounds(this.selectedFunctions ?? [], this.address, this.rangeInKm, this.paginationLimit).pipe(
-      takeUntil(this.subscriptions$),
-      tap((response) => {
-        if (fitMapToBounds) {
-          this.fitMapToBounds(response.result);
-        }
-        this.addMarkers(response.result);
-        this.totalResults = response.total;
-      }),
-      map((response) => response.result)
-    ).subscribe(value => {
-      this.playGrounds = value;
-      this.loading = false;
-    });
-  }
-
-
-  getUserCurrentPosition(): void {
-    this.loading = true;
-    this.locationService.getAddress()
-      .pipe(takeUntil(this.subscriptions$))
-      .subscribe((address) => {
-        this.searchField.nativeElement.value = address.name;
-        this.address = address;
-        this.getPlayGrounds();
-      });
-  }
-
-  private initFunctions() {
-    this.playGroundService.getAllFunctions()
-      .pipe(takeUntil(this.subscriptions$))
-      .subscribe(value => {
-        this.allFunctions = value;
-      });
-  }
-
-  private fitMapToBounds(playGrounds: PlayGround[]) {
-    const bounds = new google.maps.LatLngBounds();
-    playGrounds.forEach((playGround) => {
-      bounds.extend({
-        lat: playGround.fields.geo_point_2d.lat,
-        lng: playGround.fields.geo_point_2d.lon
-      });
-    });
-    if (playGrounds.length > 0) {
-      this.map.fitBounds(bounds);
-    }
-  }
-
-  private addMarkers(playGrounds: PlayGround[]) {
-    this.markers = [];
-    playGrounds.forEach((playGround) => {
-      this.markers.push({
-        position: {
-          lat: playGround.fields.geo_point_2d.lat,
-          lng: playGround.fields.geo_point_2d.lon
-        }
-      });
-    });
-  }
-
-  private setAddress(name: string | null | undefined, lat: string | null | undefined, lng: string | null | undefined) {
-    this.address = {
-      name: name || DEFAULT_ADDRESS.name,
-      lat: lat ? parseFloat(lat) : DEFAULT_ADDRESS.lat,
-      lng: lng ? parseFloat(lng) : DEFAULT_ADDRESS.lng
-    };
-    this.searchField.nativeElement.value = this.address.name;
-  }
-
-  loadPlayGroundsLazy($event: any) {
-    const newLimit = $event.first + $event.rows;
-    if (newLimit > this.paginationLimit) {
-      this.paginationLimit = newLimit;
-      this.getPlayGrounds();
-    }
-  }
 }

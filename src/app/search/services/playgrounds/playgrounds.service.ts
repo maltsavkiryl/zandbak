@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
-import { PlayGround } from "../../models/playground.interface";
+import { PlayGround } from "../../../shared/models/playground.interface";
 import { HttpClient } from "@angular/common/http";
-import { Address } from "../../models/address.interface";
+import { Address } from "../../../shared/models/address.interface";
 
 @Injectable({
   providedIn: "root"
@@ -17,7 +17,7 @@ export class PlaygroundsService {
       map((results) => results["records"].map((value: any) => value["record"])));
   }
 
-  getAllFunctions(): Observable<string[]> {
+  getAllPlayGroundFunctions(): Observable<string[]> {
     return this.http.get<any>(`${this.baseHostUrl}/aggregates?select=&group_by=functies`).pipe(
       map((value) => {
         return value["aggregations"]
@@ -33,7 +33,7 @@ export class PlaygroundsService {
   getPlayGrounds(functions: string[], address: Address, rangeInKm: number, limit: number): Observable<{ total: number; result: PlayGround[] }> {
     let query = new PlayGroundsQueryBuilder()
       .addFunctions(functions)
-      .addLocation(address,rangeInKm)
+      .addLocation(address, rangeInKm)
       .addLimit(limit)
       .build();
 
@@ -41,8 +41,8 @@ export class PlaygroundsService {
       map((response) => {
         return {
           total: response["total_count"],
-          result: response["records"].map((value: any) => value["record"]),
-        }
+          result: response["records"].map((value: any) => value["record"])
+        };
       }));
   }
 }
@@ -62,14 +62,14 @@ export class PlayGroundsQueryBuilder {
 
   addLimit(limit: number): PlayGroundsQueryBuilder {
     if (limit !== null) {
-        this.query += `&limit=${limit}`;
+      this.query += `&limit=${limit}`;
     }
     return this;
   }
 
   addLocation(address: Address, rangeInKm: number): PlayGroundsQueryBuilder {
     if (address && address?.lat !== null && address?.lng !== null && rangeInKm !== null) {
-      if(this.functions.length > 0){
+      if (this.functions.length > 0) {
         this.query += `and `;
       }
       this.query += `distance(geo_point_2d, geom'POINT(${address.lng} ${address.lat})', ${rangeInKm}km)`;

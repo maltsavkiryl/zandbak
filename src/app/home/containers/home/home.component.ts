@@ -12,6 +12,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("mapSearchField") searchField: ElementRef;
   private address: Address;
   loading: boolean;
+  textFieldPlaceHolder: string;
 
   private subscriptions$ = new Subject<void>();
 
@@ -24,12 +25,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getUserCurrentPosition(): void {
     this.loading = true;
+    this.textFieldPlaceHolder = "Locatie ophalen...";
     this.locationService.getAddress()
       .pipe(takeUntil(this.subscriptions$))
       .subscribe((address) => {
         this.searchField.nativeElement.value = address.name;
         this.address = address;
         this.loading = false;
+        this.textFieldPlaceHolder = "Geef een locatie in...";
       });
   }
 
@@ -62,5 +65,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions$.next();
     this.subscriptions$.unsubscribe();
+  }
+
+  onSearchFieldClick() {
+    this.subscriptions$.next();
+    this.loading = false;
+    this.textFieldPlaceHolder = "Geef een locatie in...";
   }
 }

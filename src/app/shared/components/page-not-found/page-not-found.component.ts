@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 
 @Component({
@@ -10,18 +10,14 @@ import { Router } from "@angular/router";
           <button class="p-button" (click)="onNavigateButtonClick()">Terug naar home</button>
         </div>
       </div>
-    `,
-  styleUrls: ["./page-not-found.component.scss"]
+    `
 })
-export class PageNotFoundComponent implements OnInit {
+export class PageNotFoundComponent {
 
   constructor(private router: Router) {
   }
 
-  ngOnInit(): void {
-  }
-
   onNavigateButtonClick() {
-    this.router.navigate(['home']);
+    this.router.navigate(["home"]);
   }
 }
