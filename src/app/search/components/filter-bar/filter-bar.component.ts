@@ -2,6 +2,12 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Outp
 import { Address } from "../../../shared/models/address.interface";
 import { debounceTime, Subject } from "rxjs";
 
+const DEFAULT_ADDRESS: Address = {
+  name: undefined,
+  lat: 51.0597468,
+  lng: 3.6855079
+};
+
 @Component({
   selector: "zandbak-filter-bar",
   templateUrl: "./filter-bar.component.html",
@@ -14,7 +20,7 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
   @Input() loading: boolean;
 
   @Input() set address(address: Address) {
-    if (this.searchField) {
+    if (this.searchField && address.name) {
       this.searchField.nativeElement.value = address.name;
     }
   }
@@ -56,12 +62,20 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
       if (places) {
         const place = places[0];
         this.addressChanged.emit({
-          name: place.formatted_address || "",
+          name: place.formatted_address,
           lat: place.geometry?.location?.lat() || 0,
           lng: place.geometry?.location?.lng() || 0
         });
-        this.searchField.nativeElement.value = place.formatted_address;
+        console.log("changed: " + place.formatted_address);
+        if (place.formatted_address) {
+          this.searchField.nativeElement.value = place.formatted_address;
+        }
       }
     });
+  }
+
+  clearSearchTextField() {
+    this.searchField.nativeElement.value = "";
+    this.addressChanged.emit(DEFAULT_ADDRESS);
   }
 }

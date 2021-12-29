@@ -19,13 +19,12 @@
         <zandbak-playground-list
           [playGrounds]="playGroundList"
           [totalResults]="totalResults"
-          (loadPlayGroundsChanged)="loadPlayGrounds($event)"
+          (loadPlayGroundsChanged)="onLoadMorePlayGrounds($event)"
         ></zandbak-playground-list>
       </div>
 
       <div class="p-col-8 p-pl-0">
         <zandbak-playground-map
-          [fitToBounds]="fitToBounds"
           [address]="address"
           [mapMarkers]="markers">
         </zandbak-playground-map>

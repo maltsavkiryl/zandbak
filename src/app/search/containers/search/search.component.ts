@@ -1,15 +1,15 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
-import { PlaygroundsService } from "../../services/playgrounds/playgrounds.service";
+import { PlaygroundsService } from "../../services/playgrounds.service";
 import { map, Subject, takeUntil, tap } from "rxjs";
 import { PlayGround } from "../../../shared/models/playground.interface";
-import { LocationService } from "../../../shared/services/location/location.service";
+import { LocationService } from "../../../shared/services/location.service";
 import { Address } from "../../../shared/models/address.interface";
 import { ActivatedRoute } from "@angular/router";
 import { Marker } from "../../models/marker.interface";
 
 const DEFAULT_RANGE: number = 3;
 const DEFAULT_ADDRESS: Address = {
-  name: "",
+  name: undefined,
   lat: 51.0597468,
   lng: 3.6855079
 };
@@ -26,7 +26,6 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   totalResults: number = 0;
   loading: boolean = true;
   paginationLimit: number = 20;
-  fitToBounds: boolean = false;
 
   private selectedPlayGroundFunctions: string[] = [];
   private subscriptions$ = new Subject<void>();
@@ -44,23 +43,22 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.subscriptions$))
       .subscribe((queryParams) => {
         if (queryParams.get("name") && queryParams.get("lat") && queryParams.get("lng")) {
-          this.fitToBounds = false;
           this.setAddress(queryParams.get("name"), queryParams.get("lat"), queryParams.get("lng"));
           this.rangeInKm = 3;
+        } else {
         }
+        console.log("address");
         this.getPlayGrounds();
       });
   }
 
   onRangeSelectChange(rangeInKm: number): void {
     this.rangeInKm = rangeInKm;
-    this.fitToBounds = true;
     this.getPlayGrounds();
   }
 
   onFunctionsSelectionChanged(selectedPlayGroundFunctions: string[]): void {
     this.selectedPlayGroundFunctions = selectedPlayGroundFunctions;
-    this.fitToBounds = true;
     this.getPlayGrounds();
   }
 
@@ -84,7 +82,6 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     this.locationService.getAddress()
       .pipe(takeUntil(this.subscriptions$))
       .subscribe((address) => {
-        this.fitToBounds = false;
         this.address = address;
         this.getPlayGrounds();
       });
@@ -115,7 +112,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  loadPlayGrounds(limit: number): void {
+  onLoadMorePlayGrounds(limit: number): void {
     if (limit > this.paginationLimit) {
       this.paginationLimit = limit;
       this.getPlayGrounds();
@@ -123,9 +120,10 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onAddressChanged(address: Address): void {
-    this.fitToBounds = false;
     this.address = address;
-    this.rangeInKm = 3;
+    if (this.address.name) {
+      this.rangeInKm = 3;
+    }
     this.getPlayGrounds();
   }
 

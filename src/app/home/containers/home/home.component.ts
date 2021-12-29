@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { LocationService } from "../../../shared/services/location/location.service";
+import { LocationService } from "../../../shared/services/location.service";
 import { Router } from "@angular/router";
 import { Address } from "../../../shared/models/address.interface";
 import { Subject, takeUntil } from "rxjs";

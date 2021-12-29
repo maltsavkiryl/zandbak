@@ -9,19 +9,15 @@ import { Marker } from "../../models/marker.interface";
 })
 export class PlaygroundMapComponent {
   @ViewChild(GoogleMap) map: GoogleMap;
-
-  @Input() set fitToBounds(fitToBounds: boolean) {
-    this.fitGoogleMapToBounds = fitToBounds;
-  }
+  private currentAddress: Address;
 
   @Input() set mapMarkers(markers: Marker[]) {
     this.markers = markers;
-    if (this.fitGoogleMapToBounds) {
-      this.fitMapToBounds(markers);
-    }
+    this.fitMapToBounds(markers);
   }
 
   @Input() set address(address: Address) {
+    this.currentAddress = address;
     this.centerMapOnAddress(address);
   }
 
@@ -39,16 +35,23 @@ export class PlaygroundMapComponent {
   }
 
   private fitMapToBounds(markers: Marker[]): void {
-    const bounds = new google.maps.LatLngBounds();
-    markers.forEach((marker) => {
-      bounds.extend({
-        lat: marker.position.lat,
-        lng: marker.position.lng
+    if (markers.length == 0) {
+      return;
+    }
+
+    if (this.currentAddress.name == undefined) {
+      const bounds = new google.maps.LatLngBounds();
+      this.map.googleMap?.getBounds()?.union(bounds);
+      markers.forEach((marker) => {
+        bounds.extend({
+          lat: marker.position.lat,
+          lng: marker.position.lng
+        });
       });
-    });
-    if (markers.length > 0) {
       this.map.fitBounds(bounds);
+      if(this.markers.length == 1){
+        this.map.googleMap?.setZoom(18);
+      }
     }
   }
-
 }

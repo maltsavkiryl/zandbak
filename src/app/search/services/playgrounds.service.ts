@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
-import { PlayGround } from "../../../shared/models/playground.interface";
+import { PlayGround } from "../../shared/models/playground.interface";
 import { HttpClient } from "@angular/common/http";
-import { Address } from "../../../shared/models/address.interface";
+import { Address } from "../../shared/models/address.interface";
 
 @Injectable({
   providedIn: "root"

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, switchMap } from "rxjs";
-import { LatLng } from "../../models/latlng.interface";
-import { Address } from "../../models/address.interface";
+import { LatLng } from "../models/latlng.interface";
+import { Address } from "../models/address.interface";
 
 @Injectable({
   providedIn: "root"

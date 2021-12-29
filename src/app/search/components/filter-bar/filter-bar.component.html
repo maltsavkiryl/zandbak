@@ -1,9 +1,12 @@
 <div class="search-bar p-formgroup-inline p-ai-center" style="padding-left: 30px">
   <div class="p-field p-mb-0">
         <span class="p-input-icon-right">
-          <i class="pi pi-map-marker" id="location" style="cursor: pointer; color: blue; font-size: 1.1em"
+          <i *ngIf="!searchField?.nativeElement?.value" class="pi pi-map-marker" id="location" style="cursor: pointer; color: blue; font-size: 1.1em"
              (click)="getUserCurrentPosition()"></i>
-          <input #mapSearchField [style]="{'width': '400px'}" type="text" placeholder="Speelstraat 123..." pInputText />
+          <i *ngIf="searchField?.nativeElement?.value" class="pi pi-times" style="cursor: pointer; color: blue; font-size: 1.1em"
+             (click)="clearSearchTextField()"></i>
+
+          <input #mapSearchField [style]="{'width': '400px'}" type="text" placeholder="Geef een adres in..." pInputText />
         </span>
   </div>
   <div class="p-field p-mb-0">
