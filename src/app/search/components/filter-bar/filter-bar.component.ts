@@ -31,6 +31,7 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
   @Output() rangeSelectionChanged = new EventEmitter<number>();
   @Output() functionsSelectionChanged = new EventEmitter<string[]>();
   @Output() addressChanged = new EventEmitter<Address>();
+  @Output() resetButtonClick = new EventEmitter<void>();
 
   rangeSelectionSubject: Subject<any> = new Subject();
 
@@ -74,8 +75,12 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
     });
   }
 
-  clearSearchTextField() {
+  clearSearchTextField(): void {
     this.searchField.nativeElement.value = "";
     this.addressChanged.emit(DEFAULT_ADDRESS);
+  }
+
+  onResetButtonClick(): void {
+    this.resetButtonClick
   }
 }
