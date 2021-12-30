@@ -13,11 +13,6 @@ export class PlaygroundsService {
   constructor(private http: HttpClient, @Inject("BASE_HOST_URL") private baseHostUrl: string) {
   }
 
-  getPlaygrounds(): Observable<PlayGround[]> {
-    return this.http.get<any>(`${this.baseHostUrl}/records`).pipe(
-      map((results) => results["records"].map((value: any) => value["record"])));
-  }
-
   getAllPlayGroundFunctions(): Observable<string[]> {
     return this.http.get<any>(`${this.baseHostUrl}/aggregates?select=&group_by=functies`).pipe(
       map((value) => {
@@ -27,11 +22,7 @@ export class PlaygroundsService {
       }));
   }
 
-  private onlyUnique(value: any, index: number, self: any) {
-    return self.indexOf(value) === index;
-  }
-
-  getPlayGrounds(functions: string[], address: Address, rangeInKm: number, limit: number): Observable<{ total: number; result: PlayGround[] }> {
+  getPlayGrounds(functions: string[], address: Address, rangeInKm: number, limit: number): Observable<{ totalResults: number; result: PlayGround[] }> {
     let query = new PlayGroundsQueryBuilder()
       .addFunctions(functions)
       .addLocation(address, rangeInKm)
@@ -41,9 +32,13 @@ export class PlaygroundsService {
     return this.http.get<any>(`${this.baseHostUrl}/records${query}`).pipe(
       map((response) => {
         return {
-          total: response["total_count"],
+          totalResults: response["total_count"],
           result: response["records"].map((value: any) => value["record"])
         };
       }));
+  }
+
+  private onlyUnique(value: any, index: number, self: any): any {
+    return self.indexOf(value) === index;
   }
 }

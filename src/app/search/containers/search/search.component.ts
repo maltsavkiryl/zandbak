@@ -1,13 +1,13 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { PlaygroundsService } from "../../services/playgrounds.service";
-import { map, Subject, takeUntil, tap } from "rxjs";
+import { catchError, EMPTY, map, Subject, takeUntil, tap } from "rxjs";
 import { PlayGround } from "../../../shared/models/playground.interface";
 import { LocationService } from "../../../shared/services/location.service";
 import { Address } from "../../../shared/models/address.interface";
 import { ActivatedRoute } from "@angular/router";
 import { Marker } from "../../models/marker.interface";
 
-const DEFAULT_RANGE: number = 3;
+const DEFAULT_RANGE: number = 10;
 const DEFAULT_ADDRESS: Address = {
   name: "",
   lat: 51.0597468,
@@ -67,9 +67,13 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       takeUntil(this.subscriptions$),
       tap((response) => {
         this.addMarkers(response.result);
-        this.totalResults = response.total;
+        this.totalResults = response.totalResults;
       }),
-      map((response) => response.result)
+      map((response) => response.result),
+      catchError(() => {
+        this.loading = false;
+        return EMPTY;
+      })
     ).subscribe(playGrounds => {
       this.loading = false;
       this.playGroundList = playGrounds;
@@ -114,8 +118,8 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   onLazyLoadMorePlayGrounds(limit: number): void {
     if (limit > this.paginationLimit) {
       this.paginationLimit = limit;
+      this.getPlayGrounds();
     }
-    this.getPlayGrounds();
   }
 
   onAddressChanged(address: Address): void {

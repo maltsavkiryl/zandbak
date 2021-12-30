@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { PlayGround } from "../../../shared/models/playground.interface";
-import { LazyLoadEvent } from "primeng/api";
 
 @Component({
   selector: "zandbak-playground-list",
@@ -17,8 +16,7 @@ export class PlaygroundListComponent {
   selectedPlayGround: PlayGround;
 
   onLazyLoadPlayGrounds($event: any): void {
-    console.log($event);
-    this.lazyLoadPlayGroundsChanged.emit($event.first  + $event.rows);
+    this.lazyLoadPlayGroundsChanged.emit($event.first + $event.rows);
   }
 
   onPlayGroundCardClick(playGround: PlayGround): void {
