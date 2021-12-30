@@ -3,6 +3,7 @@ import { map, Observable } from "rxjs";
 import { PlayGround } from "../../shared/models/playground.interface";
 import { HttpClient } from "@angular/common/http";
 import { Address } from "../../shared/models/address.interface";
+import { PlayGroundsQueryBuilder } from "./playground-query-param.builder";
 
 @Injectable({
   providedIn: "root"
@@ -45,40 +46,4 @@ export class PlaygroundsService {
         };
       }));
   }
-}
-
-export class PlayGroundsQueryBuilder {
-
-  private query: string = "?where=";
-  private functions: string[] = [];
-
-  addFunctions(functions: string[]): PlayGroundsQueryBuilder {
-    if (functions.length > 0) {
-      this.functions = functions;
-      this.query += `functies like "${functions.concat(", ")}"`;
-    }
-    return this;
-  }
-
-  addLimit(limit: number): PlayGroundsQueryBuilder {
-    if (limit !== null) {
-      this.query += `&limit=${limit}`;
-    }
-    return this;
-  }
-
-  addLocation(address: Address, rangeInKm: number): PlayGroundsQueryBuilder {
-    if (address && address?.lat !== null && address?.lng !== null && rangeInKm !== null) {
-      if (this.functions.length > 0) {
-        this.query += `and `;
-      }
-      this.query += `distance(geo_point_2d, geom'POINT(${address.lng} ${address.lat})', ${rangeInKm}km)`;
-    }
-    return this;
-  }
-
-  build(): string {
-    return this.query;
-  }
-
 }
