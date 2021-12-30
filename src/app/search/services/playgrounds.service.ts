@@ -3,7 +3,7 @@ import { map, Observable } from "rxjs";
 import { PlayGround } from "../../shared/models/playground.interface";
 import { HttpClient } from "@angular/common/http";
 import { Address } from "../../shared/models/address.interface";
-import { PlayGroundsQueryBuilder } from "./playground-query-param.builder";
+import { PlayGroundsQueryBuilder } from "./playgrounds-query.builder";
 
 @Injectable({
   providedIn: "root"
