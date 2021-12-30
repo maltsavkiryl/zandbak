@@ -2,24 +2,20 @@ import { Address } from "../../shared/models/address.interface";
 
 export class PlayGroundsQueryBuilder {
 
-  private query: string = "";
+  private query: string = "?where=";
   private functions: string[] = [];
 
   addFunctions(functions: string[]): PlayGroundsQueryBuilder {
     if (functions.length > 0) {
       this.functions = functions;
-      this.query += `?where=functies like "${functions.concat(", ")}"`;
+      this.query += `functies like "${functions.concat(", ")}"`;
     }
     return this;
   }
 
   addLimit(limit: number): PlayGroundsQueryBuilder {
     if (limit !== null) {
-      if (this.query == "") {
-        this.query += `?limit=${limit}`;
-      } else {
-        this.query += `&limit=${limit}`;
-      }
+      this.query += `&limit=${limit}`;
     }
     return this;
   }

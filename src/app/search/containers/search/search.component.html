@@ -20,7 +20,8 @@
       <zandbak-playground-list
         [playGrounds]="playGroundList"
         [totalResults]="totalResults"
-        (loadPlayGroundsChanged)="onLoadMorePlayGrounds($event)"
+        (lazyLoadPlayGroundsChanged)="onLazyLoadMorePlayGrounds($event)"
+        (playGroundSelected)="onPlayGroundSelected($event)"
       ></zandbak-playground-list>
     </div>
 

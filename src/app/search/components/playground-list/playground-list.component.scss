@@ -10,16 +10,16 @@
   margin: 30px;
 }
 
+
+.active {
+  background-color: rgba(246, 156, 21, 0.3);
+}
+
 .playground-card {
-  border-bottom: 2px solid #e5e5e5;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
   vertical-align: center;
   cursor: pointer;
 
-  &:hover {
+  &:hover:not(.active) {
     background-color: #f8f8f8;
   }
 
@@ -32,6 +32,8 @@
   }
 
   .playground-card-body {
+    border-bottom: 1.5px solid #e5e5e5;
+    padding: 30px;
     display: inline-block;
     position: relative;
     width: 100%;

@@ -25,7 +25,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   markers: Marker[] = [];
   totalResults: number = 0;
   loading: boolean = true;
-  paginationLimit: number = 20;
+  paginationLimit: number = 10;
   selectedPlayGroundFunctions: string[] = [];
 
   private subscriptions$ = new Subject<void>();
@@ -111,11 +111,11 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
-  onLoadMorePlayGrounds(limit: number): void {
+  onLazyLoadMorePlayGrounds(limit: number): void {
     if (limit > this.paginationLimit) {
       this.paginationLimit = limit;
-      this.getPlayGrounds();
     }
+    this.getPlayGrounds();
   }
 
   onAddressChanged(address: Address): void {
@@ -136,5 +136,13 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedPlayGroundFunctions = [];
     this.address = DEFAULT_ADDRESS;
     this.getPlayGrounds();
+  }
+
+  onPlayGroundSelected(playGround: PlayGround): void {
+    this.address = {
+      name: playGround.fields.naam,
+      lat: playGround.fields.geo_point_2d.lat,
+      lng: playGround.fields.geo_point_2d.lon
+    };
   }
 }

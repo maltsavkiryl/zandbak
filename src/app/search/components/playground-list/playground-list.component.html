@@ -7,14 +7,17 @@
   </div>
 
   <p-virtualScroller [value]="playGrounds"
-                     [itemSize]="180"
                      scrollHeight="calc(100vh - 322px)"
                      [rows]="10"
-                     [lazy]="true" (onLazyLoad)="loadPlayGround($event)">
+                     [itemSize]="177"
+                     [lazy]="true"
+                     (onLazyLoad)="onLazyLoadPlayGrounds($event)">
     <ng-template let-playGround pTemplate="item">
-      <div class="playground-card">
+      <div class="playground-card" [ngClass]="{'active': selectedPlayGround && playGround === selectedPlayGround}"
+           (click)="onPlayGroundCardClick(playGround)">
         <div class="playground-card-body">
-          <img class="image" src="https://www.miracle-recreation.com/content/uploads/2018/11/Image-Header_Park.jpg.webp" />
+          <img class="image"
+               src="https://www.miracle-recreation.com/content/uploads/2018/11/Image-Header_Park.jpg.webp" />
           <p class="title">{{playGround.fields.naam}}</p>
           <p class="size">{{playGround.size}} m2</p>
           <p class="functions">{{playGround.fields.functies}}</p>

@@ -19,12 +19,11 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
   @Input() allFunctions: any;
   @Input() loading: boolean;
 
-  @Input() set selectedPlayGroundFunctions(selectedFunctions: string[]){
+  @Input() set selectedPlayGroundFunctions(selectedFunctions: string[]) {
     this.selectedFunctions = selectedFunctions;
   }
 
   @Input() set address(address: Address) {
-    console.log("change address: " + address);
     if (this.searchField) {
       this.searchField.nativeElement.value = address.name;
     }
@@ -72,7 +71,6 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
           lat: place.geometry?.location?.lat() || 0,
           lng: place.geometry?.location?.lng() || 0
         });
-        console.log("changed: " + place.formatted_address);
         if (place.formatted_address) {
           this.searchField.nativeElement.value = place.formatted_address;
         }
