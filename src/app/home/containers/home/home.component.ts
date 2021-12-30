@@ -8,9 +8,8 @@ import { Subject, takeUntil } from "rxjs";
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.scss"]
 })
-export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild("mapSearchField") searchField: ElementRef;
-  private address: Address;
+export class HomeComponent implements OnInit, OnDestroy {
+  address: Address;
   loading: boolean;
   textFieldPlaceHolder: string;
 
@@ -29,7 +28,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.locationService.getAddress()
       .pipe(takeUntil(this.subscriptions$))
       .subscribe((address) => {
-        this.searchField.nativeElement.value = address.name;
         this.address = address;
         this.loading = false;
         this.textFieldPlaceHolder = "Geef een locatie in...";
@@ -42,21 +40,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.textFieldPlaceHolder = "Geef een locatie in...";
   }
 
-  ngAfterViewInit(): void {
-    const searchBox = new google.maps.places.SearchBox(this.searchField.nativeElement);
-
-    searchBox.addListener("places_changed", () => {
-      const places = searchBox.getPlaces();
-      if (places) {
-        const place = places[0];
-        this.address = {
-          name: place.formatted_address || "",
-          lat: place.geometry?.location?.lat() || 0,
-          lng: place.geometry?.location?.lng() || 0
-        };
-        this.navigateToSearch();
-      }
-    });
+  onAddressSelected(address: Address): void {
+    this.address = address;
+    this.navigateToSearch();
   }
 
   private navigateToSearch(): void {

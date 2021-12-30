@@ -1,4 +1,4 @@
-<div *ngIf="playGrounds" style="height: calc(100vh - 270px)">
+<div *ngIf="playGrounds">
   <div class="number-of-results-wrapper">
     <p *ngIf="totalResults > 0" class="number-of-results">{{totalResults}} Resultaten gevonden</p>
     <div *ngIf="totalResults == 0" class="number-of-results">
@@ -8,7 +8,7 @@
 
   <p-virtualScroller [value]="playGrounds"
                      [itemSize]="180"
-                     scrollHeight="calc(100vh - 320px)"
+                     scrollHeight="calc(100vh - 322px)"
                      [rows]="10"
                      [lazy]="true" (onLazyLoad)="loadPlayGround($event)">
     <ng-template let-playGround pTemplate="item">

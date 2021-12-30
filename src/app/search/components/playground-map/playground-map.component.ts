@@ -21,7 +21,6 @@ export class PlaygroundMapComponent {
     this.centerMapOnAddress(address);
   }
 
-  private fitGoogleMapToBounds: boolean;
   markers: Marker[] = [];
 
   private centerMapOnAddress(address: Address): void {
@@ -35,11 +34,11 @@ export class PlaygroundMapComponent {
   }
 
   private fitMapToBounds(markers: Marker[]): void {
-    if (markers.length == 0) {
+    if (markers.length === 0) {
       return;
     }
 
-    if (this.currentAddress.name == undefined) {
+    if (this.currentAddress.name === "") {
       const bounds = new google.maps.LatLngBounds();
       this.map.googleMap?.getBounds()?.union(bounds);
       markers.forEach((marker) => {

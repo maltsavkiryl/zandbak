@@ -3,7 +3,7 @@ import { Address } from "../../../shared/models/address.interface";
 import { debounceTime, Subject } from "rxjs";
 
 const DEFAULT_ADDRESS: Address = {
-  name: undefined,
+  name: "",
   lat: 51.0597468,
   lng: 3.6855079
 };
@@ -19,19 +19,24 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
   @Input() allFunctions: any;
   @Input() loading: boolean;
 
+  @Input() set selectedPlayGroundFunctions(selectedFunctions: string[]){
+    this.selectedFunctions = selectedFunctions;
+  }
+
   @Input() set address(address: Address) {
-    if (this.searchField && address.name) {
+    console.log("change address: " + address);
+    if (this.searchField) {
       this.searchField.nativeElement.value = address.name;
     }
   }
 
-  selectedFunctions: any;
+  selectedFunctions: string[];
 
   @Output() userCurrentPositionRequested = new EventEmitter<void>();
   @Output() rangeSelectionChanged = new EventEmitter<number>();
   @Output() functionsSelectionChanged = new EventEmitter<string[]>();
   @Output() addressChanged = new EventEmitter<Address>();
-  @Output() resetButtonClick = new EventEmitter<void>();
+  @Output() resetButtonClicked = new EventEmitter<void>();
 
   rangeSelectionSubject: Subject<any> = new Subject();
 
@@ -63,7 +68,7 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
       if (places) {
         const place = places[0];
         this.addressChanged.emit({
-          name: place.formatted_address,
+          name: place.formatted_address || "",
           lat: place.geometry?.location?.lat() || 0,
           lng: place.geometry?.location?.lng() || 0
         });
@@ -81,6 +86,6 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
   }
 
   onResetButtonClick(): void {
-    this.resetButtonClick
+    this.resetButtonClicked.emit();
   }
 }

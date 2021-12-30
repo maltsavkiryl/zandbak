@@ -1,34 +1,34 @@
-<div class="p-grid" style="margin: 0!important;">
-  <div class="p-col-12 p-p-0" style="height: 100px">
-    <zandbak-filter-bar
-      [allFunctions]="playGroundFunctions"
-      [rangeInKm]="rangeInKm"
-      (functionsSelectionChanged)="onFunctionsSelectionChanged($event)"
-      (rangeSelectionChanged)="onRangeSelectChange($event)"
-      (userCurrentPositionRequested)="getUserCurrentPosition()"
-      (addressChanged)="onAddressChanged($event)"
-      [loading]="loading"
-      [address]="address"
-    >
-    </zandbak-filter-bar>
-  </div>
+<div class="p-col-12 p-p-0">
+  <zandbak-filter-bar
+    [allFunctions]="playGroundFunctions"
+    [rangeInKm]="rangeInKm"
+    (functionsSelectionChanged)="onFunctionsSelectionChanged($event)"
+    (rangeSelectionChanged)="onRangeSelectChange($event)"
+    (userCurrentPositionRequested)="getUserCurrentPosition()"
+    (addressChanged)="onAddressChanged($event)"
+    [loading]="loading"
+    [address]="address"
+    (resetButtonClicked)="onResetButtonClick()"
+    [selectedPlayGroundFunctions]="selectedPlayGroundFunctions"
+  >
+  </zandbak-filter-bar>
+</div>
 
-  <div class="p-col-12 p-p-0" style="height: calc(100vh - 240px)">
-    <div class="p-grid">
-      <div class="p-col-4 p-pr-0">
-        <zandbak-playground-list
-          [playGrounds]="playGroundList"
-          [totalResults]="totalResults"
-          (loadPlayGroundsChanged)="onLoadMorePlayGrounds($event)"
-        ></zandbak-playground-list>
-      </div>
+<div class="p-col-12 p-p-0" style="height: calc(100vh - 240px)">
+  <div class="p-grid p-m-0">
+    <div class="p-lg-4 p-md-6 p-sm-12 p-col-12 p-p-0">
+      <zandbak-playground-list
+        [playGrounds]="playGroundList"
+        [totalResults]="totalResults"
+        (loadPlayGroundsChanged)="onLoadMorePlayGrounds($event)"
+      ></zandbak-playground-list>
+    </div>
 
-      <div class="p-col-8 p-pl-0">
-        <zandbak-playground-map
-          [address]="address"
-          [mapMarkers]="markers">
-        </zandbak-playground-map>
-      </div>
+    <div class="p-md-6 p-lg-8 p-sm-12 p-p-0 p-col-12">
+      <zandbak-playground-map
+        [address]="address"
+        [mapMarkers]="markers">
+      </zandbak-playground-map>
     </div>
   </div>
 </div>

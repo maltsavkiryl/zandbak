@@ -4,7 +4,7 @@ import { Component, OnInit } from "@angular/core";
   selector: "zandbak-footer",
   template: `
     <div class="footer">
-      <div>Kiryl Maltsav x Wisemen</div>
+      <img src="assets/images/zandbak_footer.png" height="15px"/>
     </div>
   `,
   styleUrls: ["./footer.component.scss"]

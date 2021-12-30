@@ -9,7 +9,7 @@ import { Marker } from "../../models/marker.interface";
 
 const DEFAULT_RANGE: number = 3;
 const DEFAULT_ADDRESS: Address = {
-  name: undefined,
+  name: "",
   lat: 51.0597468,
   lng: 3.6855079
 };
@@ -26,8 +26,8 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   totalResults: number = 0;
   loading: boolean = true;
   paginationLimit: number = 20;
+  selectedPlayGroundFunctions: string[] = [];
 
-  private selectedPlayGroundFunctions: string[] = [];
   private subscriptions$ = new Subject<void>();
 
   constructor(private activatedRoute: ActivatedRoute, private playGroundService: PlaygroundsService, private locationService: LocationService) {
@@ -47,7 +47,6 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
           this.rangeInKm = 3;
         } else {
         }
-        console.log("address");
         this.getPlayGrounds();
       });
   }
@@ -121,8 +120,8 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onAddressChanged(address: Address): void {
     this.address = address;
-    if (this.address.name) {
-      this.rangeInKm = 3;
+    if (this.address.name != "") {
+      this.rangeInKm = DEFAULT_RANGE;
     }
     this.getPlayGrounds();
   }
@@ -132,4 +131,10 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions$.unsubscribe();
   }
 
+  onResetButtonClick(): void {
+    this.rangeInKm = DEFAULT_RANGE;
+    this.selectedPlayGroundFunctions = [];
+    this.address = DEFAULT_ADDRESS;
+    this.getPlayGrounds();
+  }
 }
