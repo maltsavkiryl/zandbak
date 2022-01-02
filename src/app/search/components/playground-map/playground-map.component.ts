@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
 import { GoogleMap } from "@angular/google-maps";
 import { Marker } from "../../models/marker.interface";
 import { Circle } from "../../models/circle.interface";
@@ -25,9 +25,11 @@ export class PlaygroundMapComponent implements AfterViewInit {
     if (this.selectedPlayground) {
       this.zoomAndCenterOnPlayground();
     } else {
-      this.drawCircleOnMapAndCenter()
+      this.drawCircleOnMapAndCenter();
     }
   }
+
+  @Output() markerClicked = new EventEmitter<Marker>();
 
   private selectedPlayground: Playground;
   private mapCircle: Circle;
@@ -74,5 +76,9 @@ export class PlaygroundMapComponent implements AfterViewInit {
       );
       this.map.googleMap?.setZoom(18);
     }
+  }
+
+  onMarkerClick(event: any, marker: Marker) {
+    this.markerClicked.emit(marker);
   }
 }

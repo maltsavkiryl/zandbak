@@ -10,9 +10,11 @@
     [loading]="loading"
     (paginationChanged)="onPaginationChanged($event)"
     (playGroundSelected)="onPlayGroundSelected($event)"
+    [selectedPlayground]="selectedPlayGround"
   ></zandbak-playground-list>
   <zandbak-playground-map
     [circle]="mapCircle"
+    (markerClicked)="onMarkerClicked($event)"
     [playground]="selectedPlayGround"
     [mapMarkers]="markers">
   </zandbak-playground-map>

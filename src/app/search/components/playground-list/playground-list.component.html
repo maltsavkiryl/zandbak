@@ -8,7 +8,7 @@
 </div>
 
 <div class="list">
-  <div *ngFor="let playground of playgrounds" class="playground-card" [ngClass]="{'active': selectedPlayGround && playground === selectedPlayGround}"
+  <div *ngFor="let playground of playgrounds" class="playground-card" [ngClass]="{'active': selectedPlayground && playground === selectedPlayground}"
        (click)="onPlayGroundCardClick(playground)">
     <div class="playground-card-body">
       <img class="image"

@@ -29,17 +29,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   mapCircle: Circle;
 
   private subscriptions$ = new Subject<void>();
-  private rangeInKm: number;
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private playGroundService: PlaygroundService) {
   }
 
   ngOnInit(): void {
     this.initQueryParamListenerForPlaygrounds();
-  }
-
-  onPlayGroundSelected(playGround: Playground): void {
-    this.selectedPlayGround = playGround;
   }
 
   private initQueryParamListenerForPlaygrounds(): void {
@@ -63,6 +58,27 @@ export class SearchComponent implements OnInit, OnDestroy {
     });
   }
 
+  onPlayGroundSelected(playGround: Playground): void {
+    this.selectedPlayGround = playGround;
+  }
+
+  onMarkerClicked(marker: Marker): void {
+    let playground = this.playgrounds.find(value => value.fields.geo_point_2d.lat === marker.position.lat && value.fields.geo_point_2d.lon === marker.position.lng);
+    if (playground) {
+      this.selectedPlayGround = playground;
+    }
+  }
+
+  onPaginationChanged(event: any): void {
+    this.router.navigate(["/search"], {
+      queryParams: {
+        "limit": event.rows,
+        "offset": event.page * event.rows
+      },
+      queryParamsHandling: "merge"
+    });
+  }
+
   private getPlayGrounds(queryParams: ParamMap): Observable<any> {
     const rangeInKm: number = parseInt(queryParams.get("range") || "0");
     const address: Address = {
@@ -80,6 +96,7 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private setMarkers(playgrounds: Playground[]): void {
     this.markers = playgrounds.map((playGround) => ({
+      label: playGround.fields.naam,
       position: {
         lat: playGround.fields.geo_point_2d.lat,
         lng: playGround.fields.geo_point_2d.lon
@@ -87,18 +104,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     }));
   }
 
-  onPaginationChanged(event: any): void {
-    this.router.navigate(["/search"], {
-      queryParams: {
-        "limit": event.rows,
-        "offset": event.page * event.rows
-      },
-      queryParamsHandling: "merge"
-    });
-  }
-
   ngOnDestroy(): void {
     this.subscriptions$.next();
     this.subscriptions$.unsubscribe();
   }
+
 }

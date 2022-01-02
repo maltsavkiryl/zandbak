@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { Playground } from "../../../shared/models/playground.interface";
-import { Marker } from "../../models/marker.interface";
 
 @Component({
   selector: "zandbak-playground-list",
@@ -11,19 +10,18 @@ export class PlaygroundListComponent {
   @Input() playgrounds: Playground[];
   @Input() totalResults: number;
   @Input() loading: boolean;
+  @Input() selectedPlayground: Playground | undefined;
 
   @Output() paginationChanged = new EventEmitter<any>();
   @Output() playGroundSelected = new EventEmitter<Playground>();
 
-  selectedPlayGround: Playground | undefined;
-
   onPlayGroundCardClick(playGround: Playground): void {
-    if (this.selectedPlayGround === playGround) {
-      this.selectedPlayGround = undefined;
+    if (this.selectedPlayground === playGround) {
+      this.selectedPlayground = undefined;
     } else {
-      this.selectedPlayGround = playGround;
+      this.selectedPlayground = playGround;
     }
-    this.playGroundSelected.emit(this.selectedPlayGround);
+    this.playGroundSelected.emit(this.selectedPlayground);
   }
 
   onPageChange($event: any) {

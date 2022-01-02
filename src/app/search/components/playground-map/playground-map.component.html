@@ -2,6 +2,6 @@
   <map-marker
     *ngFor="let marker of markers"
     [position]="marker.position"
-  >
-  </map-marker>
+    (mapClick)="onMarkerClick($event, marker)"
+  ></map-marker>
 </google-map>
