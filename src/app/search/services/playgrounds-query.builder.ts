@@ -1,11 +1,11 @@
 import { Address } from "../../shared/models/address.interface";
 
-export class PlayGroundsQueryBuilder {
+export class PlaygroundsQueryBuilder {
 
   private query: string = "?where=";
   private functions: string[] = [];
 
-  addFunctions(functions: string[]): PlayGroundsQueryBuilder {
+  addFunctions(functions: string[]): PlaygroundsQueryBuilder {
     if (functions.length > 0) {
       this.functions = functions;
       this.query += `functies like "${functions.concat(", ")}"`;
@@ -13,14 +13,17 @@ export class PlayGroundsQueryBuilder {
     return this;
   }
 
-  addLimit(limit: number): PlayGroundsQueryBuilder {
+  addPagination(limit: number, offset: number): PlaygroundsQueryBuilder {
     if (limit !== null) {
       this.query += `&limit=${limit}`;
+    }
+    if (offset !== null) {
+      this.query += `&offset=${offset}`;
     }
     return this;
   }
 
-  addLocation(address: Address, rangeInKm: number): PlayGroundsQueryBuilder {
+  addLocation(address: Address, rangeInKm: number): PlaygroundsQueryBuilder {
     if (address && address?.lat !== null && address?.lng !== null && rangeInKm !== null) {
       if (this.functions.length > 0) {
         this.query += `and `;

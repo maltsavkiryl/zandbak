@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { PlayGround } from "../../../shared/models/playground.interface";
+import { Playground } from "../../../shared/models/playground.interface";
+import { Marker } from "../../models/marker.interface";
 
 @Component({
   selector: "zandbak-playground-list",
@@ -7,20 +8,25 @@ import { PlayGround } from "../../../shared/models/playground.interface";
   styleUrls: ["./playground-list.component.scss"]
 })
 export class PlaygroundListComponent {
-  @Input() playGrounds: PlayGround[] | null;
+  @Input() playgrounds: Playground[];
   @Input() totalResults: number;
+  @Input() loading: boolean;
 
-  @Output() lazyLoadPlayGroundsChanged = new EventEmitter<number>();
-  @Output() playGroundSelected = new EventEmitter<PlayGround>();
+  @Output() paginationChanged = new EventEmitter<any>();
+  @Output() playGroundSelected = new EventEmitter<Playground>();
 
-  selectedPlayGround: PlayGround;
+  selectedPlayGround: Playground | undefined;
 
-  onLazyLoadPlayGrounds($event: any): void {
-    this.lazyLoadPlayGroundsChanged.emit($event.first + $event.rows);
+  onPlayGroundCardClick(playGround: Playground): void {
+    if (this.selectedPlayGround === playGround) {
+      this.selectedPlayGround = undefined;
+    } else {
+      this.selectedPlayGround = playGround;
+    }
+    this.playGroundSelected.emit(this.selectedPlayGround);
   }
 
-  onPlayGroundCardClick(playGround: PlayGround): void {
-    this.selectedPlayGround = playGround;
-    this.playGroundSelected.emit(playGround);
+  onPageChange($event: any) {
+    this.paginationChanged.emit($event);
   }
 }

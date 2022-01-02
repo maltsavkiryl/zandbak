@@ -1,31 +1,23 @@
-<div *ngIf="playGrounds">
-  <div class="number-of-results-wrapper">
-    <p *ngIf="totalResults > 0" class="number-of-results">{{totalResults}} Resultaten gevonden</p>
-    <div *ngIf="totalResults == 0" class="number-of-results">
-      <p>Geen resultaten gevonden.</p>
+<div class="number-of-results-wrapper">
+  <p *ngIf="totalResults > 0" class="number-of-results">{{totalResults}} Resultaten gevonden
+  </p>
+  <i *ngIf="loading" class="pi pi-spin pi-spinner"></i>
+  <div *ngIf="totalResults == 0" class="number-of-results">
+    <p>Geen resultaten gevonden.</p>
+  </div>
+</div>
+
+<div class="list">
+  <div *ngFor="let playground of playgrounds" class="playground-card" [ngClass]="{'active': selectedPlayGround && playground === selectedPlayGround}"
+       (click)="onPlayGroundCardClick(playground)">
+    <div class="playground-card-body">
+      <img class="image"
+           src="https://www.miracle-recreation.com/content/uploads/2018/11/Image-Header_Park.jpg.webp" />
+      <p class="title">{{playground.fields.naam}}</p>
+      <p class="size">{{playground.size}} m2</p>
+      <p class="functions">{{playground.fields.functies}}</p>
     </div>
   </div>
-
-  <p-virtualScroller [value]="playGrounds"
-                     scrollHeight="calc(100vh - 322px)"
-                     [rows]="10"
-                     [itemSize]="177"
-                     [lazy]="true"
-                     (onLazyLoad)="onLazyLoadPlayGrounds($event)">
-    <ng-template let-playGround pTemplate="item">
-      <div class="playground-card" [ngClass]="{'active': selectedPlayGround && playGround === selectedPlayGround}"
-           (click)="onPlayGroundCardClick(playGround)">
-        <div class="playground-card-body">
-          <img class="image"
-               src="https://www.miracle-recreation.com/content/uploads/2018/11/Image-Header_Park.jpg.webp" />
-          <p class="title">{{playGround.fields.naam}}</p>
-          <p class="size">{{playGround.size}} m2</p>
-          <p class="functions">{{playGround.fields.functies}}</p>
-        </div>
-      </div>
-    </ng-template>
-    <ng-template let-playGround pTemplate="loadingItem">
-      <i class="pi pi-spin pi-spinner"></i>
-    </ng-template>
-  </p-virtualScroller>
 </div>
+
+<p-paginator [rows]="10" [pageLinkSize]="3" [totalRecords]="totalResults" [showFirstLastIcon]="false" [rowsPerPageOptions]="[10,50,100]" (onPageChange)="onPageChange($event)"></p-paginator>

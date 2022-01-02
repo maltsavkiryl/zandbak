@@ -1,19 +1,19 @@
 import { Inject, Injectable } from "@angular/core";
 import { map, Observable } from "rxjs";
-import { PlayGround } from "../../shared/models/playground.interface";
+import { Playground } from "../../shared/models/playground.interface";
 import { HttpClient } from "@angular/common/http";
 import { Address } from "../../shared/models/address.interface";
-import { PlayGroundsQueryBuilder } from "./playgrounds-query.builder";
+import { PlaygroundsQueryBuilder } from "./playgrounds-query.builder";
 
 @Injectable({
   providedIn: "root"
 })
-export class PlaygroundsService {
+export class PlaygroundService {
 
   constructor(private http: HttpClient, @Inject("BASE_HOST_URL") private baseHostUrl: string) {
   }
 
-  getAllPlayGroundFunctions(): Observable<string[]> {
+  getAllPlaygroundFunctions(): Observable<string[]> {
     return this.http.get<any>(`${this.baseHostUrl}/aggregates?select=&group_by=functies`).pipe(
       map((value) => {
         return value["aggregations"]
@@ -22,11 +22,11 @@ export class PlaygroundsService {
       }));
   }
 
-  getPlayGrounds(functions: string[], address: Address, rangeInKm: number, limit: number): Observable<{ totalResults: number; result: PlayGround[] }> {
-    let query = new PlayGroundsQueryBuilder()
+  getPlaygrounds(functions: string[], address: Address, rangeInKm: number, limit: number, offset: number): Observable<{ totalResults: number; result: Playground[] }> {
+    let query = new PlaygroundsQueryBuilder()
       .addFunctions(functions)
       .addLocation(address, rangeInKm)
-      .addLimit(limit)
+      .addPagination(limit, offset)
       .build();
 
     return this.http.get<any>(`${this.baseHostUrl}/records${query}`).pipe(

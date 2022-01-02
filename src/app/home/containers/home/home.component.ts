@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { LocationService } from "../../../shared/services/location.service";
 import { Router } from "@angular/router";
 import { Address } from "../../../shared/models/address.interface";
@@ -13,9 +13,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   loading: boolean;
   textFieldPlaceHolder: string;
 
+
   private subscriptions$ = new Subject<void>();
 
-  constructor(private locationService: LocationService, private router: Router) {
+  constructor(private locationService: LocationService, private router: Router, private zone: NgZone) {
   }
 
   ngOnInit(): void {
@@ -42,17 +43,19 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onAddressSelected(address: Address): void {
     this.address = address;
-    this.navigateToSearch();
+    this.navigateToSearch(address);
   }
 
-  private navigateToSearch(): void {
-    if (this.address) {
+  private navigateToSearch(address: Address): void {
+    this.zone.run(() => {
       this.router.navigate(["/search"], {
         queryParams: {
-          ...this.address
+          "name": address.name,
+          "lat": address.lat,
+          "lng": address.lng
         }
       });
-    }
+    });
   }
 
   ngOnDestroy(): void {

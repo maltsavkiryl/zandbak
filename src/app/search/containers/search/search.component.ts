@@ -1,105 +1,85 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
-import { PlaygroundsService } from "../../services/playgrounds.service";
-import { catchError, EMPTY, map, Subject, takeUntil, tap } from "rxjs";
-import { PlayGround } from "../../../shared/models/playground.interface";
-import { LocationService } from "../../../shared/services/location.service";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { PlaygroundService } from "../../services/playground.service";
+import { catchError, EMPTY, map, Observable, Subject, switchMap, takeUntil } from "rxjs";
+import { Playground } from "../../../shared/models/playground.interface";
 import { Address } from "../../../shared/models/address.interface";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { Marker } from "../../models/marker.interface";
+import { Circle } from "../../../shared/models/circle.interface";
 
-const DEFAULT_RANGE: number = 10;
 const DEFAULT_ADDRESS: Address = {
-  name: "",
+  name: undefined,
   lat: 51.0597468,
   lng: 3.6855079
 };
 
+const DEFAULT_LIMIT: number = 20;
+const DEFAULT_OFFSET: number = 0;
+
 @Component({
-  templateUrl: "./search.component.html"
+  templateUrl: "./search.component.html",
+  styleUrls: ["./search.component.scss"]
 })
-export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
-  playGroundFunctions: string[] = [];
-  playGroundList: PlayGround[];
-  rangeInKm: number = DEFAULT_RANGE;
-  address: Address = DEFAULT_ADDRESS;
+export class SearchComponent implements OnInit, OnDestroy {
+  playgrounds: Playground[] = [];
   markers: Marker[] = [];
   totalResults: number = 0;
   loading: boolean = true;
-  paginationLimit: number = 10;
-  selectedPlayGroundFunctions: string[] = [];
+  selectedPlayGround: Playground;
+  mapCircle: Circle;
 
   private subscriptions$ = new Subject<void>();
+  private rangeInKm: number;
 
-  constructor(private activatedRoute: ActivatedRoute, private playGroundService: PlaygroundsService, private locationService: LocationService) {
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private playGroundService: PlaygroundService) {
   }
 
   ngOnInit(): void {
-    this.getAllPlayGroundFunctions();
-    this.getPlayGrounds();
+    this.initQueryParamListenerForPlaygrounds();
   }
 
-  ngAfterViewInit(): void {
-    this.activatedRoute.queryParamMap
-      .pipe(takeUntil(this.subscriptions$))
-      .subscribe((queryParams) => {
-        if (queryParams.get("name") && queryParams.get("lat") && queryParams.get("lng")) {
-          this.setAddress(queryParams.get("name"), queryParams.get("lat"), queryParams.get("lng"));
-          this.rangeInKm = 3;
-        } else {
-        }
-        this.getPlayGrounds();
-      });
+  onPlayGroundSelected(playGround: Playground): void {
+    this.selectedPlayGround = playGround;
   }
 
-  onRangeSelectChange(rangeInKm: number): void {
-    this.rangeInKm = rangeInKm;
-    this.getPlayGrounds();
-  }
-
-  onFunctionsSelectionChanged(selectedPlayGroundFunctions: string[]): void {
-    this.selectedPlayGroundFunctions = selectedPlayGroundFunctions;
-    this.getPlayGrounds();
-  }
-
-  private getPlayGrounds(): void {
-    this.loading = true;
-    this.playGroundService.getPlayGrounds(this.selectedPlayGroundFunctions ?? [], this.address, this.rangeInKm, this.paginationLimit).pipe(
-      takeUntil(this.subscriptions$),
-      tap((response) => {
-        this.addMarkers(response.result);
-        this.totalResults = response.totalResults;
+  private initQueryParamListenerForPlaygrounds(): void {
+    this.activatedRoute.queryParamMap.pipe(
+      switchMap((queryParams) => {
+        this.loading = true;
+        return this.getPlayGrounds(queryParams);
       }),
-      map((response) => response.result),
+      takeUntil(this.subscriptions$),
+      map((response) => {
+        this.totalResults = response.totalResults;
+        return response.result;
+      }),
       catchError(() => {
         this.loading = false;
         return EMPTY;
-      })
-    ).subscribe(playGrounds => {
+      })).subscribe(playgrounds => {
+      this.setMarkers(playgrounds);
+      this.playgrounds = playgrounds;
       this.loading = false;
-      this.playGroundList = playGrounds;
     });
   }
 
-  getUserCurrentPosition(): void {
-    this.loading = true;
-    this.locationService.getAddress()
-      .pipe(takeUntil(this.subscriptions$))
-      .subscribe((address) => {
-        this.address = address;
-        this.getPlayGrounds();
-      });
+  private getPlayGrounds(queryParams: ParamMap): Observable<any> {
+    const rangeInKm: number = parseInt(queryParams.get("range") || "0");
+    const address: Address = {
+      name: queryParams.get("name") || DEFAULT_ADDRESS.name,
+      lat: parseFloat(queryParams.get("lat") || DEFAULT_ADDRESS.lat.toString()),
+      lng: parseFloat(queryParams.get("lng") || DEFAULT_ADDRESS.lng.toString())
+    };
+    const selectedFunctions: string[] = queryParams.get("selectedFunctions")?.split(",") || [];
+    this.mapCircle = { lat: address.lat, lng: address.lng, radius: rangeInKm * 1000 };
+    const paginationLimit = parseInt(queryParams.get("limit") || DEFAULT_LIMIT.toString());
+    const paginationOffset = parseInt(queryParams.get("offset") || DEFAULT_OFFSET.toString());
+
+    return this.playGroundService.getPlaygrounds(selectedFunctions, address, rangeInKm, paginationLimit, paginationOffset);
   }
 
-  private getAllPlayGroundFunctions(): void {
-    this.playGroundService.getAllPlayGroundFunctions()
-      .pipe(takeUntil(this.subscriptions$))
-      .subscribe(playGroundFunctions => {
-        this.playGroundFunctions = playGroundFunctions;
-      });
-  }
-
-  private addMarkers(playGrounds: PlayGround[]): void {
-    this.markers = playGrounds.map((playGround) => ({
+  private setMarkers(playgrounds: Playground[]): void {
+    this.markers = playgrounds.map((playGround) => ({
       position: {
         lat: playGround.fields.geo_point_2d.lat,
         lng: playGround.fields.geo_point_2d.lon
@@ -107,46 +87,18 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     }));
   }
 
-  private setAddress(name: string | null, lat: string | null, lng: string | null): void {
-    this.address = {
-      name: name || DEFAULT_ADDRESS.name,
-      lat: lat ? parseFloat(lat) : DEFAULT_ADDRESS.lat,
-      lng: lng ? parseFloat(lng) : DEFAULT_ADDRESS.lng
-    };
-  }
-
-  onLazyLoadMorePlayGrounds(limit: number): void {
-    if (limit > this.paginationLimit) {
-      this.paginationLimit = limit;
-      this.getPlayGrounds();
-    }
-  }
-
-  onAddressChanged(address: Address): void {
-    this.address = address;
-    if (this.address.name != "") {
-      this.rangeInKm = DEFAULT_RANGE;
-    }
-    this.getPlayGrounds();
+  onPaginationChanged(event: any): void {
+    this.router.navigate(["/search"], {
+      queryParams: {
+        "limit": event.rows,
+        "offset": event.page * event.rows
+      },
+      queryParamsHandling: "merge"
+    });
   }
 
   ngOnDestroy(): void {
     this.subscriptions$.next();
     this.subscriptions$.unsubscribe();
-  }
-
-  onResetButtonClick(): void {
-    this.rangeInKm = DEFAULT_RANGE;
-    this.selectedPlayGroundFunctions = [];
-    this.address = DEFAULT_ADDRESS;
-    this.getPlayGrounds();
-  }
-
-  onPlayGroundSelected(playGround: PlayGround): void {
-    this.address = {
-      name: playGround.fields.naam,
-      lat: playGround.fields.geo_point_2d.lat,
-      lng: playGround.fields.geo_point_2d.lon
-    };
   }
 }

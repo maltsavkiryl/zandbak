@@ -1,18 +1,36 @@
-
-.number-of-results-wrapper{
-  height: 50px;
+.number-of-results-wrapper {
+  height: 60px;
+  padding-left: 30px;
+  padding-right: 30px;
   border-bottom: 2px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .number-of-results {
   font-size: 1.2em;
   font-weight: bold;
-  margin: 30px;
+  display: inline;
 }
 
+.pi-spinner {
+  color: #f69c15;
+  font-size: 1.5em;
+}
 
 .active {
   background-color: rgba(246, 156, 21, 0.3);
+}
+
+.list {
+  height: calc(100vh - 374px);
+  overflow-y: scroll;
+}
+
+:host ::ng-deep .p-paginator {
+  border-top: 2px solid #e5e5e5;
+  border-radius: 0;
 }
 
 .playground-card {

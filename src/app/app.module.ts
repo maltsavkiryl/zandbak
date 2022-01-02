@@ -11,7 +11,6 @@ import { GoogleMapsModule } from "@angular/google-maps";
 import { HttpClientModule } from "@angular/common/http";
 import { environment } from "../environments/environment";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MenubarModule } from "primeng/menubar";
 import { SharedModule } from "./shared/shared.module";
 
 @NgModule({
