@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input, ViewChild } from "@angular/core";
 import { GoogleMap } from "@angular/google-maps";
 import { Marker } from "../../models/marker.interface";
-import { Circle } from "../../../shared/models/circle.interface";
+import { Circle } from "../../models/circle.interface";
 import { Playground } from "../../../shared/models/playground.interface";
 
 @Component({
@@ -72,7 +72,7 @@ export class PlaygroundMapComponent implements AfterViewInit {
           lng: this.selectedPlayground.fields.geo_point_2d.lon
         }
       );
-      this.map.googleMap?.setZoom(16);
+      this.map.googleMap?.setZoom(18);
     }
   }
 }

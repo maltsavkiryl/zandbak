@@ -7,8 +7,8 @@ import { LocationService } from "../../../shared/services/location.service";
 
 const DEFAULT_ADDRESS: Address = {
   name: undefined,
-  lat: 51.0597468,
-  lng: 3.6855079
+  lat: 51.0500182,
+  lng: 3.7303351
 };
 
 const DEFAULT_RANGE: number = 5;
@@ -39,13 +39,15 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initRangeSelectionSubject();
+    this.initPlaygroundFunctions();
     this.initFilterBar();
+  }
 
+  private initPlaygroundFunctions(): void {
     this.playGroundService.getAllPlaygroundFunctions()
       .pipe(takeUntil(this.subscriptions$))
       .subscribe((functions) => this.allFunctions = functions);
   }
-
 
   ngAfterViewInit(): void {
     this.initGoogleMapsSearchBox();
@@ -88,18 +90,14 @@ export class FilterBarComponent implements OnInit, AfterViewInit {
     };
 
     this.selectedFunctions = queryParams.get("selectedFunctions")?.split(",") || [];
-
     this.rangeInKm = parseInt(queryParams.get("range") || DEFAULT_RANGE.toString());
-
-    if (this.address.name) {
-      this.rangeInKm = 1;
-    }
 
     this.updateQueryParams({
       "name": this.address.name,
       "lat": this.address.lat,
       "lng": this.address.lng,
-      "range": this.rangeInKm
+      "range": this.rangeInKm,
+      "selectedFunctions": this.selectedFunctions.length ? this.selectedFunctions.join(",") : null
     });
   }
 

@@ -5,12 +5,12 @@ import { Playground } from "../../../shared/models/playground.interface";
 import { Address } from "../../../shared/models/address.interface";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { Marker } from "../../models/marker.interface";
-import { Circle } from "../../../shared/models/circle.interface";
+import { Circle } from "../../models/circle.interface";
 
 const DEFAULT_ADDRESS: Address = {
   name: undefined,
-  lat: 51.0597468,
-  lng: 3.6855079
+  lat: 51.0500182,
+  lng: 3.7303351
 };
 
 const DEFAULT_LIMIT: number = 20;
